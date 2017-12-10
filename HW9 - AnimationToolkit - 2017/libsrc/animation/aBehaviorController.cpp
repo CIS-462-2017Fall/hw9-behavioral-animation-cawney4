@@ -169,9 +169,8 @@ void BehaviorController::control(double deltaT)
 		Kv = 16;
 		double Kp = pow(Kv, 2);
 		double theta = m_state[ORI][_Y];
-		double thetad = m_thetad;
 		double thetaDot = m_state[AVEL][_Y];
-		double angleDiff = thetad - theta;
+		double angleDiff = m_thetad - theta;
 		ClampAngle(angleDiff);
 		double torqueY = gInertia * ((-Kv * thetaDot) - (Kp * angleDiff));
 		//m_torque = gInertia * (-Kv * m_state[AVEL] - Kp * (vec3(0, m_thetad, 0) - m_state[ORI]));
@@ -275,8 +274,8 @@ void BehaviorController::updateState(float deltaT, int integratorType)
 	}
 	*/
 
-	if (m_VelB.Length() > gMaxSpeed) {
-		m_VelB = m_VelB.Normalize() * gMaxSpeed;
+	if (m_Vel0.Length() > gMaxSpeed) {
+		m_Vel0 = m_Vel0.Normalize() * gMaxSpeed;
 	}
 
 	if (m_AVelB.Length() > gMaxAngularSpeed) {
