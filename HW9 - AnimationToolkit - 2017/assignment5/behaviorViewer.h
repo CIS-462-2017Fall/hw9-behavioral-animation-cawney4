@@ -46,6 +46,10 @@ protected:
     static void TW_CALL onGetNumCharactersCb(void *value, void *clientData);
 	static void TW_CALL onGetNumObstaclesCb(void *value, void *clientData);
 	static void TW_CALL onResetCb(void *clientData);
+	static void TW_CALL onSetMass(const void *value, void *clientData);
+	static void TW_CALL onGetMass(void *value, void *clientData);
+	static void TW_CALL onSetInertia(const void *value, void *clientData);
+	static void TW_CALL onGetInertia(void *value, void *clientData);
 
 
 	virtual void setActiveBehavior(BehaviorType type);
@@ -65,6 +69,9 @@ protected:
     int m_numCharacters;
 	int m_numObstacles;
     bool m_DebugDraw;
+	int m_mass;
+	int m_inertia;
+
 
 	//enum BehaviorType { SEEK, FLEE, ARRIVAL, DEPARTURE, AVOID, WANDER, ALIGNMENT, SEPARATION, COHESION, FLOCKING, LEADER };
 	BehaviorType m_BehaviorType;

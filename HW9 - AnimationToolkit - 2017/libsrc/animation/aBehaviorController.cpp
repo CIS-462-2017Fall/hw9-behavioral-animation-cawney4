@@ -161,15 +161,22 @@ void BehaviorController::control(double deltaT)
 		//  where the values of the gains Kv and Kp are different for each controller
 
 		// TODO: insert your code here to compute m_force and m_torque
+		m_vd = m_Vdesired.Length();
+		float Kv = 10.0;
+		m_force = gMass * Kv * (m_Vdesired - m_state[VEL]);
 
+		m_thetad = atan2(m_Vdesired[2], m_Vdesired[0]);
+		Kv = 16;
+		float Kp = pow(Kv, 2);
+		m_torque = gInertia * (-Kv * m_state[AVEL] - Kp * (vec3(0, m_thetad, 0) - m_state[ORI]));
 
+		if (m_force.Length() > gMaxForce) {
+			m_force = m_force.Normalize() * gMaxForce;
+		}
 
-
-
-
-
-
-
+		if (m_torque.Length() > gMaxTorque) {
+			m_torque = m_torque.Normalize() * gMaxTorque;
+		}
 
 
 
@@ -212,10 +219,17 @@ void BehaviorController::computeDynamics(vector<vec3>& state, vector<vec3>& cont
 	// Compute the stateDot vector given the values of the current state vector and control input vector
 	// TODO: add your code here
 
+	// Set velocity
+	stateDot[0] = state[2];
+	mat3 yRot = mat3();
+	yRot.FromAxisAngle(vec3(0, 1, 0), state[1][1] * M_PI / 180.0);
+	stateDot[0] = yRot * stateDot[0];
+	stateDot[1] = state[3];
 
-
-
-
+	// Set acceleration
+	//stateDot[2] = vec3(state[2][0] / deltaT, 0, state[2][2] / deltaT);
+	stateDot[2] = force / gMass;
+	stateDot[3] = torque / gInertia;
 }
 
 void BehaviorController::updateState(float deltaT, int integratorType)
@@ -225,12 +239,13 @@ void BehaviorController::updateState(float deltaT, int integratorType)
 
 	// TODO: add your code here
 	
+	// Update position
+	m_state[0] = m_state[0] + (deltaT * m_stateDot[0]);
+	m_state[1] = m_state[1] + (deltaT * m_stateDot[1]);
 
-
-
-
-
-
+	// Update velocity
+	m_state[2] = m_state[2] + (deltaT * m_stateDot[2]);
+	m_state[3] = m_state[3] + (deltaT * m_stateDot[3]);
 
 	//  given the new values in m_state, these are the new component state values 
 	m_Pos0 = m_state[POS];
@@ -241,7 +256,25 @@ void BehaviorController::updateState(float deltaT, int integratorType)
 	//  Perform validation check to make sure all values are within MAX values
 	// TODO: add your code here
 
+	/*
+	if (m_state[2].Length() > gMaxSpeed) {
+		m_state[2] = m_state[2].Normalize() * gMaxSpeed;
+	}
 
+	if (m_state[3].Length() > gMaxAngularSpeed) {
+		m_state[3] = m_state[3].Normalize() * gMaxSpeed;
+	}
+	*/
+	if (m_VelB.Length() > gMaxSpeed) {
+		m_VelB = m_VelB.Normalize() * gMaxSpeed;
+	}
+
+	if (m_AVelB.Length() > gMaxAngularSpeed) {
+		m_AVelB = m_AVelB.Normalize() * gMaxSpeed;
+	}
+
+	//double BehaviorController::gMaxForce = 2000.0;
+	//double BehaviorController::gMaxTorque = 2000.0;
 
 
 
