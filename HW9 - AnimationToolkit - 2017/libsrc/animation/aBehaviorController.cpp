@@ -166,8 +166,8 @@ void BehaviorController::control(double deltaT)
 		m_force = gMass * Kv * (m_Vdesired - m_state[VEL]);
 
 		m_thetad = atan2(m_Vdesired[2], m_Vdesired[0]);
-		Kv = 16;
-		double Kp = pow(Kv, 2);
+		Kv = 32;
+		double Kp = pow(16, 2);
 		double theta = m_state[ORI][_Y];
 		double thetaDot = m_state[AVEL][_Y];
 		double angleDiff = m_thetad - theta;
