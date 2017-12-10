@@ -162,13 +162,20 @@ void BehaviorController::control(double deltaT)
 
 		// TODO: insert your code here to compute m_force and m_torque
 		m_vd = m_Vdesired.Length();
-		float Kv = 10.0;
+		double Kv = 10.0;
 		m_force = gMass * Kv * (m_Vdesired - m_state[VEL]);
 
 		m_thetad = atan2(m_Vdesired[2], m_Vdesired[0]);
 		Kv = 16;
-		float Kp = pow(Kv, 2);
-		m_torque = gInertia * (-Kv * m_state[AVEL] - Kp * (vec3(0, m_thetad, 0) - m_state[ORI]));
+		double Kp = pow(Kv, 2);
+		double theta = m_state[ORI][_Y];
+		double thetad = m_thetad;
+		double thetaDot = m_state[AVEL][_Y];
+		double angleDiff = thetad - theta;
+		ClampAngle(angleDiff);
+		double torqueY = gInertia * ((-Kv * thetaDot) - (Kp * angleDiff));
+		//m_torque = gInertia * (-Kv * m_state[AVEL] - Kp * (vec3(0, m_thetad, 0) - m_state[ORI]));
+		m_torque = vec3(0, torqueY, 0);
 
 		if (m_force.Length() > gMaxForce) {
 			m_force = m_force.Normalize() * gMaxForce;
@@ -250,6 +257,8 @@ void BehaviorController::updateState(float deltaT, int integratorType)
 	//  given the new values in m_state, these are the new component state values 
 	m_Pos0 = m_state[POS];
 	m_Euler = m_state[ORI];
+	//m_lastVel0 = m_Vel0;
+	m_Vel0 = m_state[VEL];
 	m_VelB = m_state[VEL];
 	m_AVelB = m_state[AVEL];
 
@@ -265,6 +274,7 @@ void BehaviorController::updateState(float deltaT, int integratorType)
 		m_state[3] = m_state[3].Normalize() * gMaxSpeed;
 	}
 	*/
+
 	if (m_VelB.Length() > gMaxSpeed) {
 		m_VelB = m_VelB.Normalize() * gMaxSpeed;
 	}
@@ -272,12 +282,6 @@ void BehaviorController::updateState(float deltaT, int integratorType)
 	if (m_AVelB.Length() > gMaxAngularSpeed) {
 		m_AVelB = m_AVelB.Normalize() * gMaxSpeed;
 	}
-
-	//double BehaviorController::gMaxForce = 2000.0;
-	//double BehaviorController::gMaxTorque = 2000.0;
-
-
-
 
 
 
