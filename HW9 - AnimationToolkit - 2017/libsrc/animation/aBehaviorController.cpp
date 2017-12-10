@@ -157,7 +157,7 @@ void BehaviorController::control(double deltaT)
 
 		//  force and torque inputs are computed from vd and thetad as follows:
 		//              Velocity P controller : force = mass * Kv * (vd - v)
-		//              Heading PD controller : torque = Inertia * (-Kv * thetaDot -Kp * (thetad - theta))
+		//              Heading PD controller : torque = Inertia * (-Kv * thetaDot + Kp * (thetad - theta))
 		//  where the values of the gains Kv and Kp are different for each controller
 
 		// TODO: insert your code here to compute m_force and m_torque
@@ -172,7 +172,7 @@ void BehaviorController::control(double deltaT)
 		double thetaDot = m_state[AVEL][_Y];
 		double angleDiff = m_thetad - theta;
 		ClampAngle(angleDiff);
-		double torqueY = gInertia * ((-Kv * thetaDot) - (Kp * angleDiff));
+		double torqueY = gInertia * ((-Kv * thetaDot) + (Kp * angleDiff));
 		//m_torque = gInertia * (-Kv * m_state[AVEL] - Kp * (vec3(0, m_thetad, 0) - m_state[ORI]));
 		m_torque = vec3(0, torqueY, 0);
 
