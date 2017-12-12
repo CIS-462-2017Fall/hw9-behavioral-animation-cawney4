@@ -188,15 +188,18 @@ void BehaviorController::control(double deltaT)
 
 
 		// when agent desired agent velocity and actual velocity < 2.0 then stop moving
-		if (m_vd < 2.0 &&  m_state[VEL][_Z] < 2.0)
+		//if (m_vd < 2.0 &&  m_state[VEL][_Z] < 2.0)
+		if (m_vd < 2.0 &&  m_state[VEL].Length() < 2.0)
 		{
 			m_force[2] = 0.0;
+			m_force[0] = 0.0; //added by Connie because I'm using this in world coord
 			m_torque[1] = 0.0;
 		}
 	}
 	else
 	{
 		m_force[2] = 0.0;
+		m_force[0] = 0.0; //added by Connie because I'm using this in world coord
 		m_torque[1] = 0.0;
 	}
 
@@ -227,13 +230,12 @@ void BehaviorController::computeDynamics(vector<vec3>& state, vector<vec3>& cont
 
 	// Set velocity
 	stateDot[0] = state[2];
-	mat3 yRot = mat3();
-	yRot.FromAxisAngle(vec3(0, 1, 0), state[1][1] * M_PI / 180.0);
-	stateDot[0] = yRot * stateDot[0];
+	//mat3 yRot = mat3();
+	//yRot.FromAxisAngle(vec3(0, 1, 0), state[1][1]);
+	//stateDot[0] = yRot * stateDot[0];
 	stateDot[1] = state[3];
 
 	// Set acceleration
-	//stateDot[2] = vec3(state[2][0] / deltaT, 0, state[2][2] / deltaT);
 	stateDot[2] = force / gMass;
 	stateDot[3] = torque / gInertia;
 }

@@ -15,9 +15,6 @@ BehaviorViewer::BehaviorViewer(int numCharacters, int numObstacles)
 	
 	m_numCharacters = numCharacters;
 	m_numObstacles = numObstacles;
-	
-	m_mass = 1;
-	m_inertia = 1;
 }
 
 
@@ -84,8 +81,10 @@ void BehaviorViewer::initializeGui()
 	TwAddVarRW(m_TwBehaviorBar, "Radius", TW_TYPE_DOUBLE, &BehaviorController::gAgentRadius, "");
 	TwAddVarRW(m_TwBehaviorBar, "Debug", TW_TYPE_BOOLCPP, &m_DebugDraw, "");
 	TwAddButton(m_TwBehaviorBar, "Reset", onResetCb, this, "");
-	TwAddVarCB(m_TwBehaviorBar, "Mass", TW_TYPE_INT32, onSetMass, onGetMass, this, "");
-	TwAddVarCB(m_TwBehaviorBar, "M Inertia", TW_TYPE_INT32, onSetInertia, onGetInertia, this, "");
+	TwAddVarRW(m_TwBehaviorBar, "Arrival", TW_TYPE_DOUBLE, &BehaviorController::KArrival, "");
+	TwAddVarRW(m_TwBehaviorBar, "Separation", TW_TYPE_DOUBLE, &BehaviorController::KSeparation, "");
+	TwAddVarRW(m_TwBehaviorBar, "Alignment", TW_TYPE_DOUBLE, &BehaviorController::KAlignment, "");
+	TwAddVarRW(m_TwBehaviorBar, "Cohesion", TW_TYPE_DOUBLE, &BehaviorController::KCohesion, "");
 
 	//TODO: Add your code here to create additional GUI Variables
 }
@@ -477,25 +476,3 @@ void TW_CALL BehaviorViewer::onResetCb(void *clientData)
 }
 
 //TODO: Add your code here to create the corresponding callback functions for each new GUI Variable added
-
-void TW_CALL BehaviorViewer::onSetMass(const void* value, void *clientData) {
-	BehaviorViewer* viewer = ((BehaviorViewer*)clientData);
-	int v = *(const int *)value;  // for instance
-	viewer->reset(viewer->m_mass, v);
-}
-
-void TW_CALL BehaviorViewer::onGetMass(void *value, void *clientData) {
-	BehaviorViewer* viewer = ((BehaviorViewer*)clientData);
-	*static_cast<int *>(value) = viewer->m_mass;
-}
-
-void TW_CALL BehaviorViewer::onSetInertia(const void* value, void *clientData) {
-	BehaviorViewer* viewer = ((BehaviorViewer*)clientData);
-	int v = *(const int *)value;  // for instance
-	viewer->reset(viewer->m_inertia, v);
-}
-
-void TW_CALL BehaviorViewer::onGetInertia(void *value, void *clientData) {
-	BehaviorViewer* viewer = ((BehaviorViewer*)clientData);
-	*static_cast<int *>(value) = viewer->m_inertia;
-}
